@@ -85,46 +85,65 @@ train_dataset = tf.data.Dataset.from_tensor_slices(train_images)\
 
 ####### 4. Define Generator & Discriminator #######
 
-def generator_model():
-    model = tf.keras.Sequential()
-    model.add(layers.Dense(7*7*256, use_bias=False, input_shape=(LATENT_SIZE,)))
-    model.add(layers.BatchNormalization())
-    model.add(layers.LeakyReLU())
+def Generator(tf.keras.Model):
+    def __init__(self):
+        super(Generator, self).__init__()
+        self.dense0 = layers.Dense(7*7*256, use_bias=False, input_shape=(LATENT_SIZE,))
+        self.bn0 = layers.BatchNormalization()
+        self.leaky_relu0 = layers.LeakyReLU()
+        self.reshape0 = layers.Reshape((7, 7, 256))
 
-    model.add(layers.Reshape((7, 7, 256)))
-    assert model.output_shape == (None, 7, 7, 256) # Batch size is None to handle all case
+        self.conv1 = layers.Conv2DTranspose(128, (5, 5), strides=(1, 1), padding='same', use_bias=False)
+        self.bn1= self.layers.BatchNormalization()
+        self.leaky_relu1 = layers.LeakyReLU()
 
-    model.add(layers.Conv2DTranspose(128, (5, 5), strides=(1, 1), padding='same', use_bias=False))
-    assert model.output_shape == (None, 7, 7, 128)
-    model.add(layers.BatchNormalization())
-    model.add(layers.LeakyReLU())
+        self.conv2= layers.Conv2DTranspose(64, (5, 5), strides=(2, 2), padding='same', use_bias=False))
+        self.bn2 = ayers.BatchNormalization())
+        self.leaky_relu2 = layers.LeakyReLU()
 
-    model.add(layers.Conv2DTranspose(64, (5, 5), strides=(2, 2), padding='same', use_bias=False))
-    assert model.output_shape == (None, 14, 14, 64)
-    model.add(layers.BatchNormalization())
-    model.add(layers.LeakyReLU())
-
-    model.add(layers.Conv2DTranspose(IMAGE_CHANNEL, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh'))
-    assert model.output_shape == (None, 28, 28, IMAGE_CHANNEL)
+        self.conv3= layers.Conv2DTranspose(IMAGE_CHANNEL, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh'))
     
-    return model
+    def call(self, x, training=True):
+        x = self.dense0(x)
+        x = self.bn0(x)
+        x = self.leaky_relu0(x)
+        x = self.reshape0(x)
 
+        x = self.conv1(x)
+        x = self.bn1(x)
+        x = self.leaky_relu1(x)
 
-def discriminator_model():
-    model = tf.keras.Sequential()
-    model.add(layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same',
-                                     input_shape=[IMAGE_SIZE, IMAGE_SIZE, IMAGE_CHANNEL]))
-    model.add(layers.LeakyReLU())
-    model.add(layers.Dropout(0.3))
+        x = self.conv2(x)
+        x = self.bn2(x)
+        x = self.leaky_relu2(x)
+        return self.conv3(x)
 
-    model.add(layers.Conv2D(128, (5, 5), strides=(2, 2), padding='same'))
-    model.add(layers.LeakyReLU())
-    model.add(layers.Dropout(0.3))
+def Discriminator(tf.keras.Model):
+    def __init__(self):
+        super(Discriminator, self).__init__()
+        self.conv0 = layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same',
+                                     input_shape=[IMAGE_SIZE, IMAGE_SIZE, IMAGE_CHANNEL])
+        self.leaky_relu0 = layers.LeakyReLU()
+        self.dropout0 = layers.Dropout(0.3)
+
+        self.conv1 = layers.Conv2D(128, (5, 5), strides=(2, 2), padding='same')
+        self.leaky_relu1 = layers.LeakyReLU()
+        self.dropout1 = layers.Dropout(0.3))
    
-    model.add(layers.Flatten())
-    model.add(layers.Dense(1))
-
-    return model
+        self.flatten2 = layers.Flatten()
+        self.dense2 = layers.Dense(1)
+    
+    def call(self, x, training=True):
+        x = self.conv0(x)
+        x = self.leaky_relu0(x)
+        if training:
+            x = self.dropout0(x, training=training)
+        x = self.conv1(x)
+        x = self.leaky_relu2(x)
+        if training:
+            x = self.dropout1(x, training=training)
+        x = self.flatten2(x)
+        return self.dense2(x)
 
 
 ####### 5. Define Loss for Generator & Discriminator #######
@@ -148,8 +167,8 @@ def generator_loss(fake_output):
 ####### 6. Define Optimizer & Checkpoint #######
 
 # declare models
-generator = generator_model()
-discriminator = discriminator_model()
+generator = Generator()
+discriminator = Discriminator()
 
 # declare optimizers
 generator_optimizer = tf.keras.optimizers.Adam(LR)
