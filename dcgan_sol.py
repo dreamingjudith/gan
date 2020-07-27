@@ -11,7 +11,22 @@ from tensorflow.keras import layers
 from utils import generate_and_save_images, generate_and_save_gif
 
 # assign specific gpu 
-os.environ["CUDA_VISIBLE_DEVICES"]="5" 
+os.environ["CUDA_VISIBLE_DEVICES"]="0" 
+
+
+gpus = tf.config.experimental.list_physical_devices('GPU')
+if gpus:
+  # Restrict TensorFlow to only allocate 1GB of memory on the first GPU
+  try:
+    tf.config.experimental.set_virtual_device_configuration(
+        gpus[0],
+        [tf.config.experimental.VirtualDeviceConfiguration(memory_limit=1024)])
+    logical_gpus = tf.config.experimental.list_logical_devices('GPU')
+    print(len(gpus), "Physical GPUs,", len(logical_gpus), "Logical GPUs")
+  except RuntimeError as e:
+    # Virtual devices must be set before GPUs have been initialized
+    print(e)
+
 
 # identifier of the code
 EXPERIMENT = 'dcgan_sol'
@@ -33,7 +48,7 @@ parser.add_argument('--ckpt_dir', type=str, default='./training_checkpoints',
 # training parameters
 parser.add_argument('--epochs', type=int, default=100, 
          help='training epochs')
-parser.add_argument('--batch_size', type=int, default=256, 
+parser.add_argument('--batch_size', type=int, default=100, 
          help='input batch size')
 parser.add_argument('--latent_size', type=int, default=100, 
          help='size of the latent z vector')
