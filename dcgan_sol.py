@@ -11,7 +11,7 @@ from tensorflow.keras import layers
 from utils import generate_and_save_images, generate_and_save_gif
 
 # assign specific gpu 
-os.environ["CUDA_VISIBLE_DEVICES"]="5" 
+os.environ["CUDA_VISIBLE_DEVICES"]="0" 
 
 # identifier of the code
 EXPERIMENT = 'dcgan_sol'
@@ -85,7 +85,7 @@ train_dataset = tf.data.Dataset.from_tensor_slices(train_images)\
 
 ####### 4. Define Generator & Discriminator #######
 
-def Generator(tf.keras.Model):
+class Generator(tf.keras.Model):
     def __init__(self):
         super(Generator, self).__init__()
         self.dense0 = layers.Dense(7*7*256, use_bias=False, input_shape=(LATENT_SIZE,))
@@ -98,10 +98,10 @@ def Generator(tf.keras.Model):
         self.leaky_relu1 = layers.LeakyReLU()
 
         self.conv2= layers.Conv2DTranspose(64, (5, 5), strides=(2, 2), padding='same', use_bias=False)
-        self.bn2 = layers.BatchNormalization())
+        self.bn2 = layers.BatchNormalization()
         self.leaky_relu2 = layers.LeakyReLU()
 
-        self.conv3= layers.Conv2DTranspose(IMAGE_CHANNEL, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh'))
+        self.conv3= layers.Conv2DTranspose(IMAGE_CHANNEL, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh')
     
     def call(self, x, training=True):
         x = self.dense0(x)
@@ -118,7 +118,7 @@ def Generator(tf.keras.Model):
         x = self.leaky_relu2(x)
         return self.conv3(x)
 
-def Discriminator(tf.keras.Model):
+class Discriminator(tf.keras.Model):
     def __init__(self):
         super(Discriminator, self).__init__()
         self.conv0 = layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same',
@@ -139,7 +139,7 @@ def Discriminator(tf.keras.Model):
         if training:
             x = self.dropout0(x, training=training)
         x = self.conv1(x)
-        x = self.leaky_relu2(x)
+        x = self.leaky_relu1(x)
         if training:
             x = self.dropout1(x, training=training)
         x = self.flatten2(x)
