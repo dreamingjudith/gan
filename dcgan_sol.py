@@ -94,11 +94,11 @@ def Generator(tf.keras.Model):
         self.reshape0 = layers.Reshape((7, 7, 256))
 
         self.conv1 = layers.Conv2DTranspose(128, (5, 5), strides=(1, 1), padding='same', use_bias=False)
-        self.bn1= self.layers.BatchNormalization()
+        self.bn1= layers.BatchNormalization()
         self.leaky_relu1 = layers.LeakyReLU()
 
-        self.conv2= layers.Conv2DTranspose(64, (5, 5), strides=(2, 2), padding='same', use_bias=False))
-        self.bn2 = ayers.BatchNormalization())
+        self.conv2= layers.Conv2DTranspose(64, (5, 5), strides=(2, 2), padding='same', use_bias=False)
+        self.bn2 = layers.BatchNormalization())
         self.leaky_relu2 = layers.LeakyReLU()
 
         self.conv3= layers.Conv2DTranspose(IMAGE_CHANNEL, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh'))
@@ -128,7 +128,7 @@ def Discriminator(tf.keras.Model):
 
         self.conv1 = layers.Conv2D(128, (5, 5), strides=(2, 2), padding='same')
         self.leaky_relu1 = layers.LeakyReLU()
-        self.dropout1 = layers.Dropout(0.3))
+        self.dropout1 = layers.Dropout(0.3)
    
         self.flatten2 = layers.Flatten()
         self.dense2 = layers.Dense(1)
