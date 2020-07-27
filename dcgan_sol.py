@@ -86,9 +86,9 @@ train_dataset = tf.data.Dataset.from_tensor_slices(train_images)\
 ####### 4. Define Generator & Discriminator #######
 
 class Generator(tf.keras.Model):
-    def __init__(self):
+    def __init__(self, image_channel, latent_size):
         super(Generator, self).__init__()
-        self.dense0 = layers.Dense(7*7*256, use_bias=False, input_shape=(LATENT_SIZE,))
+        self.dense0 = layers.Dense(7*7*256, use_bias=False, input_shape=(latent_size,))
         self.bn0 = layers.BatchNormalization()
         self.leaky_relu0 = layers.LeakyReLU()
         self.reshape0 = layers.Reshape((7, 7, 256))
@@ -101,7 +101,7 @@ class Generator(tf.keras.Model):
         self.bn2 = layers.BatchNormalization()
         self.leaky_relu2 = layers.LeakyReLU()
 
-        self.conv3= layers.Conv2DTranspose(IMAGE_CHANNEL, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh')
+        self.conv3= layers.Conv2DTranspose(image_channel, (5, 5), strides=(2, 2), padding='same', use_bias=False, activation='tanh')
     
     def call(self, x, training=True):
         x = self.dense0(x)
@@ -119,10 +119,10 @@ class Generator(tf.keras.Model):
         return self.conv3(x)
 
 class Discriminator(tf.keras.Model):
-    def __init__(self):
+    def __init__(self, image_size, image_channel):
         super(Discriminator, self).__init__()
         self.conv0 = layers.Conv2D(64, (5, 5), strides=(2, 2), padding='same',
-                                     input_shape=[IMAGE_SIZE, IMAGE_SIZE, IMAGE_CHANNEL])
+                                     input_shape=[image_size, image_size, image_channel])
         self.leaky_relu0 = layers.LeakyReLU()
         self.dropout0 = layers.Dropout(0.3)
 
@@ -167,8 +167,8 @@ def generator_loss(fake_output):
 ####### 6. Define Optimizer & Checkpoint #######
 
 # declare models
-generator = Generator()
-discriminator = Discriminator()
+generator = Generator(IMAGE_SIZE, LATENT_SIZE)
+discriminator = Discriminator(IMAGE_SIZE, LATENT_SIZE)
 
 # declare optimizers
 generator_optimizer = tf.keras.optimizers.Adam(LR)
