@@ -11,7 +11,7 @@ from tensorflow.keras import layers
 from utils import generate_and_save_images, generate_and_save_gif
 
 # assign specific gpu 
-os.environ["CUDA_VISIBLE_DEVICES"]="0" 
+os.environ["CUDA_VISIBLE_DEVICES"]="5" 
 
 # identifier of the code
 EXPERIMENT = 'dcgan_sol'
@@ -167,8 +167,8 @@ def generator_loss(fake_output):
 ####### 6. Define Optimizer & Checkpoint #######
 
 # declare models
-generator = Generator(IMAGE_SIZE, LATENT_SIZE)
-discriminator = Discriminator(IMAGE_SIZE, LATENT_SIZE)
+generator = Generator(IMAGE_CHANNEL, LATENT_SIZE)
+discriminator = Discriminator(IMAGE_SIZE, IMAGE_CHANNEL)
 
 # declare optimizers
 generator_optimizer = tf.keras.optimizers.Adam(LR)
